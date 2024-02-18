@@ -7,15 +7,14 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
-from starlette.templating import Jinja2Templates
-from starlette_admin import I18nConfig, CustomView, DropDown
+from starlette_admin import I18nConfig, DropDown
 from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.i18n import SUPPORTED_LOCALES
 
 from admin_panel.custom_views import UserView, AdminView, BotSettingsView, HomeView, SchedulePostView, VehiclePostView, RealEstatePostView, VacancyPostView, AdPostView, PostView, \
     TopUpOperation
 from admin_panel.provider import MyAuthProvider
-from bot.db.base import metadata
+from admin_panel.requests import confirm_post
 from bot.db.models import models
 from configreader import config
 
@@ -31,6 +30,9 @@ def main():
             Mount(
                 "/static", app=StaticFiles(directory=static_dir), name="static"
             ),
+            Route(
+                "/admin/confirm-post", confirm_post, methods=["GET", "POST"]
+            )
 
         ],
     )

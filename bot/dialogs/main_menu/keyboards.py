@@ -1,11 +1,12 @@
 import operator
 
-from aiogram_dialog.widgets.kbd import Group, Start, Select, ScrollingGroup
+from aiogram_dialog.widgets.kbd import Group, Start, Select, ScrollingGroup, Button, WebApp
 from aiogram_dialog.widgets.text import Format
 from magic_filter import F
 
 from bot.dialogs.main_menu import selected
 from bot.dialogs.main_menu.states import UserAccount, TopUpBalance, UserPostRequests
+from bot.utils.constants import PostTypesEnum, PostStatus
 from bot.utils.i18n_utils.i18n_format import I18NFormat
 
 
@@ -54,6 +55,21 @@ def user_post_requests_kb(on_click):
         ),
         id='user_posts_s_g',
         height=6,
-        width=1
+        width=1,
+        hide_on_single_page=True
 
+    )
+
+
+def actions_with_post_kb():
+    return Group(
+        Button(I18NFormat('show_post'), id='show_post', on_click=selected.on_show_post),
+        WebApp(I18NFormat('edit_post'), id='edit_post', url=Format('{edit_post_url}'),
+               when=F['post_type_enum'].in_([PostTypesEnum.ANNOUNCEMENT_VACANCY,
+                                             PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE,
+                                             PostTypesEnum.ANNOUNCEMENT_VEHICLE])),
+        Button(I18NFormat('edit_post'), id='edit_simple_post', on_click=selected.on_edit_post,
+               when=F['post_type_enum'].in_([PostTypesEnum.POST, PostTypesEnum.AD])),
+        Button(I18NFormat('send_once_more'), id='send_once_more', on_click=selected.on_send_once_more,
+               when=F['post_status'].in_([PostStatus.PUBLISHED, PostStatus.REJECTED])),
     )

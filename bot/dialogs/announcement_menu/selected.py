@@ -21,7 +21,7 @@ async def on_enter_ask_for_publish(message: Message, widget: ManagedTextInput, m
     i18n: I18nContext = manager.middleware_data['i18n']
     bot: Bot = manager.middleware_data['bot']
     post_id = await repo.post_repo.add_post(message.chat.id, message_text)
-    await repo.post_repo.add_scheduled_post(message.chat.id, post_id, PostTypesEnum.POST)
+    await repo.post_repo.add_scheduled_post(message.chat.id, post_id, PostTypesEnum.POST, message_text)
     await send_admins(bot, repo, i18n.get('new_post_request'))
     await message.answer(i18n.get('your_ask_request_accept'))
     await manager.done()
@@ -33,7 +33,7 @@ async def on_enter_ad_message(message: Message, widget: ManagedTextInput, manage
     bot: Bot = manager.middleware_data['bot']
     manager.dialog_data.update(post_text=message_text)
     post_id = await repo.post_repo.add_post(message.chat.id, message_text)
-    await repo.post_repo.add_scheduled_post(message.chat.id, post_id, PostTypesEnum.AD)
+    await repo.post_repo.add_scheduled_post(message.chat.id, post_id, PostTypesEnum.AD, message_text)
     ad_price = await repo.bot_settings_repo.get_bot_setting('ad_price')
     await repo.user_repo.minus_user_balance(message.chat.id, float(ad_price.value))
     await send_admins(bot, repo, i18n.get('new_ad_request'))

@@ -1,10 +1,11 @@
 import asyncio
+import datetime
 
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db import Repo
-from bot.utils.constants import PostTypesEnum, AdPostStatus
+from bot.utils.constants import PostTypesEnum, PostStatus, BotSettingsEnum
 
 
 async def send_schedule_message(ctx):
@@ -16,30 +17,19 @@ async def send_schedule_message(ctx):
         posts_for_publish = await repo.post_repo.get_posts_for_publish()
         if not posts_for_publish:
             return
+        channel_id = await repo.bot_settings_repo.get_bot_setting(BotSettingsEnum.SUB_CHANNEL_ID)
         for post in posts_for_publish:
             post_type = post.announcement_type
-            if post_type == PostTypesEnum.POST:
-                post_model = await repo.post_repo.get_post(post.post_id)
-                message = post_model.post_text
-                message_for_owner = "✅Ваш пост опубликован в канале"
-            elif post_type == PostTypesEnum.AD:
-                ad_model = await repo.post_repo.get_ad_post(post.post_id)
-                message = ad_model.ad_text
-                message_for_owner = "✅Ваша реклама опубликована в канале"
-            elif post_type == PostTypesEnum.ANNOUNCEMENT_VACANCY:
-                ...
-                message_for_owner = "✅Ваша вакансия опубликована в канале"
-
-            elif post_type == PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE:
-                ...
-                message_for_owner = "✅Ваша недвижемость опубликована в канале"
-
-            elif post_type == PostTypesEnum.ANNOUNCEMENT_VEHICLE:
-                ...
-                message_for_owner = "✅Ваше сообщение, о продаже авто, опубликована в канале"
-
-            else:
-                continue
-            await bot.send_message(chat_id=post.user_id, text=message_for_owner + "\n")
-            await repo.post_repo.update_schedule_post_status(post.id, AdPostStatus.PUBLISHED)
-            await asyncio.sleep(60)
+            message_for_owner_mapping = {
+                PostTypesEnum.POST: f"✅Ваш пост #{post.id} опубликован в канале",
+                PostTypesEnum.AD: f"✅Ваша реклама #{post.id} опубликована в канале",
+                PostTypesEnum.ANNOUNCEMENT_VACANCY: f"✅Ваша вакансия #{post.id} опубликована в канале",
+                PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE: f"✅Ваша недвижемость #{post.id} опубликована в канале",
+                PostTypesEnum.ANNOUNCEMENT_VEHICLE: f"✅Ваше сообщение #{post.id}, о продаже авто, опубликована в канале",
+            }
+            message = post.text_for_publish
+            await bot.send_message(chat_id=int(channel_id.value), text=message, disable_web_page_preview=True)
+            await bot.send_message(chat_id=post.user_id, text=message_for_owner_mapping[post_type] + "\n")
+            await repo.post_repo.update_schedule_post_status(post.id, PostStatus.PUBLISHED)
+            await repo.post_repo.update_schedule_published_datetime(post.post_id, datetime.datetime.now())
+            await asyncio.sleep(45)

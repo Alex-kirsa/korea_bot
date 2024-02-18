@@ -102,8 +102,9 @@ async def main():
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(
-        runner, host=config.WEBHOOK_HOST, port=config.WEBHOOK_PORT
+        runner, host=config.webhook_host, port=config.webhook_port
     )
+
     await site.start()
     logger.info("Bot started!")
     await asyncio.Event().wait()

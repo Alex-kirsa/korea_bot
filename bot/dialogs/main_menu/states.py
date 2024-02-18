@@ -16,3 +16,11 @@ class TopUpBalance(StatesGroup):
 class UserPostRequests(StatesGroup):
     show_user_requests = State()
     show_post_details = State()
+
+
+class ShowPost(StatesGroup):
+    show_post_text = State()
+
+
+class UpdatePostText(StatesGroup):
+    enter_text = State()

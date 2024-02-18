@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import BIGINT, INTEGER, VARCHAR, TIMESTAMP, 
 from sqlalchemy.orm import mapped_column, Mapped, Relationship
 
 from bot.db.base import Base
-from bot.utils.constants import AdPostStatus, TagType, PostTypesEnum, BotSettingsEnum
+from bot.utils.constants import PostStatus, TagType, PostTypesEnum, BotSettingsEnum
 
 
 class Users(Base):
@@ -67,7 +67,6 @@ class PostMessages(Base):
     id = mapped_column(BIGINT, primary_key=True)
     user_id = mapped_column(BIGINT, ForeignKey(Users.user_id), nullable=False)
     post_text = mapped_column(TEXT, nullable=False)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="post_messages")
 
@@ -78,7 +77,6 @@ class AdMessages(Base):
     id = mapped_column(BIGINT, primary_key=True)
     user_id = mapped_column(BIGINT, ForeignKey(Users.user_id), nullable=False)
     ad_text = mapped_column(TEXT, nullable=False)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="ad_messages")
 
@@ -101,7 +99,7 @@ class VacanciesPosts(Base):
     salary = mapped_column(VARCHAR(255), nullable=False)
     wage = mapped_column(FLOAT, nullable=False)
     text_for_publish = mapped_column(TEXT, nullable=True)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
+    # status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="vacancies_posts")
     tags: Mapped[list['VacanciesTag']] = Relationship(back_populates="vacancie")
@@ -135,7 +133,7 @@ class RealEstatePosts(Base):
     announcement_from_who = mapped_column(VARCHAR(255), nullable=False)
     comment = mapped_column(TEXT, nullable=False)
     text_for_publish = mapped_column(TEXT, nullable=True)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
+    # status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="real_estate_posts")
     tags: Mapped[list['RealEstateTag']] = Relationship(back_populates="real_estate")
@@ -181,7 +179,7 @@ class VehiclesPosts(Base):
     condition = mapped_column(VARCHAR(255), nullable=False)
     presence_of_accident = mapped_column(BOOLEAN, nullable=False)
     text_for_publish = mapped_column(TEXT, nullable=True)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
+    # status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="vehicles_posts")
     tags: Mapped[list['VehicleTag']] = Relationship(back_populates="vehicle")
@@ -213,8 +211,9 @@ class SchedulePosts(Base):
     user_id = mapped_column(BIGINT, ForeignKey('users.user_id'), nullable=False)
     announcement_type = mapped_column(Enum(PostTypesEnum), nullable=False)
     post_id = mapped_column(BIGINT, nullable=False)
-    # date_to_post = mapped_column(TIMESTAMP, nullable=False)
-    status = mapped_column(Enum(AdPostStatus), nullable=False, default=AdPostStatus.WAIT_ACCEPT)
+    text_for_publish = mapped_column(TEXT, nullable=False)
+    published_datetime = mapped_column(TIMESTAMP, nullable=True)
+    status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="schedule_posts")
 
