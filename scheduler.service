@@ -1,0 +1,11 @@
+[Unit]
+Description=Scheduler
+
+[Service]
+Type=simple
+ExecStart=/root/korea_bot-dev/myenv/bin/arq bot.services.scheduler.main.WorkerSettings
+WorkingDirectory=/root/korea_bot-dev/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

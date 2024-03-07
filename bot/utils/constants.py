@@ -72,3 +72,10 @@ webapp_urls_mapping = {
     PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE: BotSettingsEnum.WEBAPP_URL_REAL_ESTATE,
     PostTypesEnum.ANNOUNCEMENT_VEHICLE: BotSettingsEnum.WEBAPP_URL_VEHICLE,
 }
+
+
+class PurchaseStatus(StrEnum):
+    """Enum for purchase statuses."""
+    PAID = "Завершено"
+    WAIT_CONFIRM = "Ожидает подтверждения"
+    CANCELED = "Отказано"

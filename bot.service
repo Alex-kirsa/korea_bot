@@ -1,0 +1,11 @@
+[Unit]
+Description=Bot
+
+[Service]
+Type=simple
+ExecStart=/root/korea_bot-dev/myenv/bin/python3.11 -m bot
+WorkingDirectory=/root/korea_bot-dev/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

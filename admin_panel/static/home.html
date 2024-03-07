@@ -4,15 +4,15 @@
         <div class="row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title">
-                    Home
+                    Домашняя страница
                 </h2>
             </div>
         </div>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{{ url_for(__name__ ~ ':index') }}">Admin</a>
+                <a href="{{ url_for(__name__ ~ ':index') }}">Админ панель</a>
             </li>
-            <li class="breadcrumb-item active">Home</li>
+            <li class="breadcrumb-item active">Домашняя страница</li>
         </ol>
     </div>
 {% endblock %}
@@ -22,7 +22,7 @@
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Посты ожидающие подтверждения</h3>
+                        <h3 class="card-title">Посты и оплаты ожидающие рассмотрения</h3>
                     </div>
                     <div class="card-body">
                         <div class="list-group card-list-group">
@@ -32,17 +32,47 @@
                                         <div class="flex-fill d-flex flex-column">
                                             <h3>{{ post['post_text'][:50] }}</h3>
                                             <div class="d-flex flex-row">
+
                                                 <a class="ms-0"
                                                    href="{{ url_for(__name__ ~ ':detail', identity='users',pk=post['user_id']) }}">
                                                     <i class="fa-solid fa-user"></i>
                                                     <i class="font-weight-bold">{{ post['user_fullname'] }}</i>
                                                 </a>
                                             </div>
+                                            <div class="d-flex flex-row mt-2">
+                                                <span class="me-3 badge bg-purple-lt"><i class="fa fa-tag"></i>Заявка на пост</span>
+                                            </div>
+
                                         </div>
                                         <div class="">
                                             <a class="btn btn-primary"
                                                href="{{ url_for(__name__ ~ ':detail', identity='schedule-posts',pk=post['post_id']) }}">
                                                 <i class="fa fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% for purchase in purchases %}
+                                <div class="list-group-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-fill d-flex flex-column">
+                                            <h3>Пополнение баланса | {{ purchase['amount'] }}</h3>
+                                            <div class="d-flex flex-row">
+                                                <a class="ms-0"
+                                                   href="{{ url_for(__name__ ~ ':detail', identity='users',pk=purchase['user_id']) }}">
+                                                    <i class="fa-solid fa-user"></i>
+                                                    <i class="font-weight-bold">{{ purchase['user_fullname'] }}</i>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex flex-row mt-2">
+                                                <span class="me-3 badge bg-green-lt"><i class="fa fa-tag"></i>Пополнение</span>
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <a class="btn btn-success"
+                                               href="{{ url_for(__name__ ~ ':detail', identity='top-up-operations', pk=purchase['purchase_id']) }}">
+                                                <i class="fa fa-usd"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -62,11 +92,14 @@
                             <div class="card-body">
                                 {% for user in users %}
                                     <div class="row g-3 align-items-center mb-3">
-                                        <a href="#" class="col-auto"></a>
+                                        <a href="#" class="col-auto">
+                                        </a>
                                         <div class="col text-truncate">
-                                            <a href="{{ url_for(__name__ ~ ':detail', identity='user',pk=user.id) }}" class="text-reset d-block text-truncate">
-                                                {{ user.full_name }}</a>
-                                            <div class="text-muted text-truncate mt-n1">{{ user.posts | length }} posts</div>
+                                            <a href="{{ url_for(__name__ ~ ':detail', identity='users', pk=user['user_id']) }}" class="text-reset d-block">
+                                                <i class="fa-solid fa-user"></i>
+                                                <i class="fw-bold">{{ user['user_fullname'] }}</i>
+                                            </a>
+                                            <div class="text-muted text-truncate mt-n1">Количество постов: {{ user['post_amount'] }}</div>
                                         </div>
                                     </div>
                                 {% endfor %}

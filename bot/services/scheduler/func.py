@@ -28,8 +28,11 @@ async def send_schedule_message(ctx):
                 PostTypesEnum.ANNOUNCEMENT_VEHICLE: f"✅Ваше сообщение #{post.id}, о продаже авто, опубликована в канале",
             }
             message = post.text_for_publish
+            scheduled_post_model = await repo.post_repo.get_schedule_post(post.id)
+            if scheduled_post_model.status == PostStatus.PUBLISHED:
+                continue
             await bot.send_message(chat_id=int(channel_id.value), text=message, disable_web_page_preview=True)
             await bot.send_message(chat_id=post.user_id, text=message_for_owner_mapping[post_type] + "\n")
             await repo.post_repo.update_schedule_post_status(post.id, PostStatus.PUBLISHED)
-            await repo.post_repo.update_schedule_published_datetime(post.post_id, datetime.datetime.now())
-            await asyncio.sleep(45)
+            await repo.post_repo.update_schedule_published_datetime(post.id, datetime.datetime.now())
+            await asyncio.sleep(20)

@@ -49,6 +49,15 @@ class UserRequestsRepo:
         await self.session.execute(query)
         await self.session.commit()
 
+    async def plus_user_balance(self, user_id: int, amount: float):
+        query = update(Users).where(
+            Users.user_id == user_id
+        ).values(
+            balance=Users.balance + amount
+        )
+        await self.session.execute(query)
+        await self.session.commit()
+
     async def get_admin_with_login_and_password(self, login: str, password: str):
         query = select(Admins).where(
             Admins.login == login,
@@ -63,3 +72,8 @@ class UserRequestsRepo:
         )
         result = await self.session.execute(query)
         return result.scalars().first()
+
+    async def get_last_10_users_desc(self):
+        query = select(Users).order_by(Users.user_id.desc()).limit(10)
+        result = await self.session.execute(query)
+        return result.scalars().all()

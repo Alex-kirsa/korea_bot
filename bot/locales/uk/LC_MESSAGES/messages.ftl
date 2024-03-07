@@ -55,6 +55,7 @@ sell_installments = Продам в рассрочку {$mark} {$model}
 sell_credit = Продам в кредит {$mark} {$model}
 sell = Продам {$mark} {$model}
 trade = Обменяю {$mark} {$model}
+full_cost =
 
 vehicle_template_msg = #Транспорт
 
@@ -71,13 +72,14 @@ vehicle_template_msg = #Транспорт
     Состояние: {$condition}
     Наличие ДТП: {$presence_of_accident}
     Город: {$city}
-    Дата окончания тех.осмотра{$date_end_technical_inspection}
+    Дата окончания тех.осмотра: {$date_end_technical_inspection}
     {$comment}
 
     {$announcement_from_who}
 
 
 real_estate_sell_type = Продам {$real_estate_type} в {$city}.
+real_estate_rent = Сдаю {$real_estate_type} в {$city}.
 real_estate_rent_per_month_type = Сдаю помесячно {$real_estate_type} в {$city}.
 real_estate_rent_long_time = Сдам на длительное время {$real_estate_type} в {$city}.
 real_estate_rent_per_day = Сдаю посуточно {$real_estate_type} в {$city}.
@@ -88,7 +90,7 @@ real_estate_template_msg = #Недвижимость
     {$tags}
 
 
-    {$caption} на {$rooms_amount}
+    {$rooms_amount} {$caption}
     Удобства: {$amenities}
     Стоимость: {$price}
     {$pledge_text}
@@ -103,10 +105,16 @@ post_request_info = Вы открыли заявку <b>#{$schedule_post_id}</b>
 show_post = Показать пост
 edit_post = Редактировать пост
 send_once_more = Отправить еще раз
-send_money_for_topup = Чтобы пополнить баланс вам нужно перевести деньги на карту: {$card_number}
+send_money_for_topup = Чтобы пополнить баланс вам нужно перевести деньги на карту: <code>{$card_number}</code>
     После перевода нажмите кнопку ниже.
     <i>Стоимость 1 рекламы - {$one_ad_price} юаней.</i>
 i_have_paid = Я оплатил(а)
 enter_new_post_text = Введите новый текст поста
 enter_new_ad_text = Введите новый текст рекламы
 post_text_was_succssesfully_changed = Текст поста успешно изменен
+you_in_query = Вы в очереди. Ваш пост будет опубликован в следующие 15 минут.
+request_topup_sended = Запрос на пополнение баланса отправлен. Ожидайте подтверждения.
+you_can_create_only_3_announcement_per_day = Вы можете создать только 3 объявления в день.
+    Ваш лимит исчерпан.
+you_can_create_only_3_posts_per_day = Вы можете создать только 3 поста в день.
+    Ваш лимит исчерпан.

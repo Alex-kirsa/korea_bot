@@ -49,7 +49,8 @@ async def get_post_request_data(dialog_manager: DialogManager, repo: Repo, event
         'post_type': post_types_mapping[schedule_post_model.announcement_type],
         'post_type_enum': schedule_post_model.announcement_type,
         'post_status': ad_post_status_mapping[schedule_post_model.status],
-        'published_datetime': schedule_post_model.published_datetime if schedule_post_model.published_datetime else 'Не опубликован',
+        'post_status_enum': schedule_post_model.status,
+        'published_datetime': schedule_post_model.published_datetime.strftime("%d.%m.%Y %H:%M") if schedule_post_model.published_datetime else 'Не опубликован',
         'edit_post_url': web_app_url.value if web_app_url else None
     }
 

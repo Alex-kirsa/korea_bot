@@ -3,6 +3,7 @@ import asyncio
 import logging
 import os
 
+import aiohttp_cors
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisEventIsolation, RedisStorage
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -41,7 +42,7 @@ async def main():
     async with engine.begin() as conn:
         await conn.run_sync(metadata.create_all)
     # Creating DB connections pool
-    db_pool = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    db_pool = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession, autoflush=False)
     async with db_pool() as session:
         await add_default_bot_settings(session)
     # Creating bot and its dispatcher
@@ -55,8 +56,9 @@ async def main():
     dp["dp"] = dp
 
     path_to_locales = os.path.join("bot", "locales", "{locale}", "LC_MESSAGES")
+    core = FluentRuntimeCore(path=path_to_locales, default_locale='uk')
     i18n_middleware = RedisI18nMiddleware(
-        core=FluentRuntimeCore(path=path_to_locales),
+        core=core,
         default_locale="uk",
         redis=redis,
     )
@@ -88,6 +90,11 @@ async def main():
     dp["session_pool"] = db_pool
 
     app = web.Application(logger=logger)
+    app['bot'] = bot
+    app['db_factory'] = db_pool
+    app['dp'] = dp
+    app['dialogs_factory'] = dialogs_factory
+    app['core'] = core
     SimpleRequestHandler(
         dispatcher=dp,
         bot=bot,
@@ -97,6 +104,16 @@ async def main():
     app.router.add_post(config.add_post_purchase_webhook, handle_purchase)
     app.router.add_post(config.add_post_vehicle_webhook, handle_create_vehicle_post)
     app.router.add_post(config.add_post_real_estate_webhook, handle_create_real_estate_post)
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*"
+        )
+    })
+
+    for route in list(app.router.routes()):
+        cors.add(route)
     setup_application(app, dp, bot=bot)
     # Start bot
     runner = web.AppRunner(app)
@@ -107,6 +124,7 @@ async def main():
 
     await site.start()
     logger.info("Bot started!")
+    # await dp.start_polling(bot)
     await asyncio.Event().wait()
 
 

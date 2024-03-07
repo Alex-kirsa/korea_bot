@@ -12,7 +12,7 @@ from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.i18n import SUPPORTED_LOCALES
 
 from admin_panel.custom_views import UserView, AdminView, BotSettingsView, HomeView, SchedulePostView, VehiclePostView, RealEstatePostView, VacancyPostView, AdPostView, PostView, \
-    TopUpOperation
+    TopUpOperation, VacanciesTagsView, RealEstateTagsView, VehicleTagsView
 from admin_panel.provider import MyAuthProvider
 from admin_panel.requests import confirm_post
 from bot.db.models import models
@@ -59,9 +59,9 @@ def main():
             always_open=False,
             views=[
                 ModelView(models.Tags, label='Общие теги', name='теги', icon="fa fa-tags"),
-                ModelView(models.VehicleTag, label='Теги транспорта', name='теги транспорта', icon="fa fa-car"),
-                ModelView(models.RealEstateTag, label='Теги недвижимости', name='теги недвижимости', icon="fa fa-building"),
-                ModelView(models.VacanciesTag, label='Теги вакансий', name='теги вакансий', icon="fa fa-briefcase"),
+                VehicleTagsView(models.VehicleTag, label='Теги транспорта', name='теги транспорта', icon="fa fa-car"),
+                RealEstateTagsView(models.RealEstateTag, label='Теги недвижимости', name='теги недвижимости', icon="fa fa-building"),
+                VacanciesTagsView(models.VacanciesTag, label='Теги вакансий', name='теги вакансий', icon="fa fa-briefcase"),
 
             ]
         )

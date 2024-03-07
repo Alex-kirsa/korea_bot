@@ -24,6 +24,22 @@ async def on_select_post_type(call: CallbackQuery, widget: Select, manager: Dial
         if user_model.balance < int(ad_price.value):
             await call.answer(i18n.get('not_enough_balance'), show_alert=True)
             return
+    if item_id == 'announcement':
+        scheduled_posts = await repo.post_repo.get_scheduled_post_created_last_24_hours(call.from_user.id,
+                                                                                        announcement_type=[
+                                                                                            PostTypesEnum.ANNOUNCEMENT_VEHICLE,
+                                                                                            PostTypesEnum.ANNOUNCEMENT_VACANCY,
+                                                                                            PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE,
+                                                                                                ])
+        if len(scheduled_posts) >= 3:
+            await call.answer(i18n.get('you_can_create_only_3_announcement_per_day'), show_alert=True)
+            return
+    elif item_id == 'post':
+        scheduled_posts = await repo.post_repo.get_scheduled_post_created_last_24_hours(call.from_user.id,
+                                                                                        announcement_type=[PostTypesEnum.POST])
+        if len(scheduled_posts) >= 3:
+            await call.answer(i18n.get('you_can_create_only_3_posts_per_day'), show_alert=True)
+            return
     await manager.start(states_mapping[item_id])
 
 
@@ -38,6 +54,14 @@ async def on_send_once_more(call: CallbackQuery, widget: Button, manager: Dialog
     repo: Repo = manager.middleware_data['repo']
     i18n: I18nContext = manager.middleware_data['i18n']
     schedule_post_id = manager.dialog_data.get('schedule_post_id')
+    schedule_post_model = await repo.post_repo.get_schedule_post(schedule_post_id)
+    if schedule_post_model.announcement_type == PostTypesEnum.AD:
+        user_model = await repo.user_repo.get_user(schedule_post_model.user_id)
+        ad_price = await repo.bot_settings_repo.get_bot_setting('ad_price')
+        if user_model.balance < int(ad_price.value):
+            await call.answer(i18n.get('not_enough_balance'), show_alert=True)
+            return
+        await repo.user_repo.minus_user_balance(schedule_post_model.user_id, int(ad_price.value))
     await repo.post_repo.update_schedule_post_status(schedule_post_id, PostStatus.WAIT_ACCEPT)
     await call.answer(i18n.get('your_ask_request_accept'), show_alert=True)
     await manager.switch_to(states.UserPostRequests.show_post_details)

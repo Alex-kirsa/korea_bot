@@ -64,12 +64,16 @@ def user_post_requests_kb(on_click):
 def actions_with_post_kb():
     return Group(
         Button(I18NFormat('show_post'), id='show_post', on_click=selected.on_show_post),
-        WebApp(I18NFormat('edit_post'), id='edit_post', url=Format('{edit_post_url}'),
-               when=F['post_type_enum'].in_([PostTypesEnum.ANNOUNCEMENT_VACANCY,
-                                             PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE,
-                                             PostTypesEnum.ANNOUNCEMENT_VEHICLE])),
-        Button(I18NFormat('edit_post'), id='edit_simple_post', on_click=selected.on_edit_post,
-               when=F['post_type_enum'].in_([PostTypesEnum.POST, PostTypesEnum.AD])),
+        # Group(
+            # WebApp(I18NFormat('edit_post'), id='edit_post', url=Format('{edit_post_url}'),
+            #        when=F['post_type_enum'].in_([PostTypesEnum.ANNOUNCEMENT_VACANCY,
+            #                                      PostTypesEnum.ANNOUNCEMENT_REAL_ESTATE,
+            #                                      PostTypesEnum.ANNOUNCEMENT_VEHICLE])),
+        #     Button(I18NFormat('edit_post'), id='edit_simple_post', on_click=selected.on_edit_post,
+        #            when=F['post_type_enum'].in_([PostTypesEnum.POST, PostTypesEnum.AD])),
+        #     when='can_edit'
+        # ),
         Button(I18NFormat('send_once_more'), id='send_once_more', on_click=selected.on_send_once_more,
-               when=F['post_status'].in_([PostStatus.PUBLISHED, PostStatus.REJECTED])),
+               when=F['post_status_enum'].in_([PostStatus.PUBLISHED, PostStatus.REJECTED])),
+
     )

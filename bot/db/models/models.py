@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import BIGINT, INTEGER, VARCHAR, TIMESTAMP, 
 from sqlalchemy.orm import mapped_column, Mapped, Relationship
 
 from bot.db.base import Base
-from bot.utils.constants import PostStatus, TagType, PostTypesEnum, BotSettingsEnum
+from bot.utils.constants import PostStatus, TagType, PostTypesEnum, BotSettingsEnum, PurchaseStatus
 
 
 class Users(Base):
@@ -25,6 +25,9 @@ class Users(Base):
     vehicles_posts: Mapped[list['VehiclesPosts']] = Relationship(back_populates="user")
     admins: Mapped[list['Admins']] = Relationship(back_populates="user")
 
+    def __repr__(self):
+        return f"<Пользователь {self.fullname}> <id: {self.user_id}> <username: {self.username}>"
+
 
 class BotSettings(Base):
     __tablename__ = "bot_settings"
@@ -42,7 +45,7 @@ class Tags(Base):
 
     id = mapped_column(BIGINT, primary_key=True)
     tag_type = mapped_column(Enum(TagType), nullable=False)
-    tag = mapped_column(VARCHAR(50), nullable=False, unique=True, index=True)
+    tag = mapped_column(VARCHAR(50), nullable=False, index=True)
 
     vacancie_tag: Mapped[list['VacanciesTag']] = Relationship(back_populates="tag")
     real_estate_tag: Mapped[list['RealEstateTag']] = Relationship(back_populates="tag")
@@ -55,8 +58,9 @@ class TopUpOperations(Base):
     id = mapped_column(BIGINT, primary_key=True)
     user_id = mapped_column(BIGINT, ForeignKey(Users.user_id), nullable=False)
     sender_name = mapped_column(VARCHAR(255), nullable=False)
-    amount = mapped_column(FLOAT, nullable=False)
+    amount = mapped_column(INTEGER, nullable=False)
     date = mapped_column(TIMESTAMP, nullable=False)
+    status = mapped_column(Enum(PurchaseStatus), nullable=False, default=PurchaseStatus.WAIT_CONFIRM)
 
     user: Mapped[Users] = Relationship(back_populates="top_up_operations")
 
@@ -111,8 +115,8 @@ class VacanciesTag(Base):
     id = mapped_column(BIGINT, primary_key=True)
     vacancie_id = mapped_column(BIGINT, ForeignKey(VacanciesPosts.id), nullable=False)
     tag_id = mapped_column(BIGINT, ForeignKey(Tags.id), nullable=False)
-    tag: Mapped[Tags] = Relationship(back_populates="vacancie_tag")
 
+    tag: Mapped[Tags] = Relationship(back_populates="vacancie_tag")
     vacancie: Mapped[VacanciesPosts] = Relationship(back_populates="tags")
 
 
@@ -124,14 +128,14 @@ class RealEstatePosts(Base):
     city = mapped_column(VARCHAR(255), nullable=False)
     caption = mapped_column(VARCHAR(255), nullable=False)
     category = mapped_column(VARCHAR(255), nullable=False)
-    number_of_rooms = mapped_column(INTEGER, nullable=False)
+    number_of_rooms = mapped_column(VARCHAR(255), nullable=False)
     real_estate_type = mapped_column(VARCHAR(255), nullable=False)
     amenities = mapped_column(TEXT, nullable=False)
     price_for_buy = mapped_column(FLOAT, nullable=True)
     price_for_rent = mapped_column(FLOAT, nullable=True)
     pledge = mapped_column(FLOAT, nullable=True)
     announcement_from_who = mapped_column(VARCHAR(255), nullable=False)
-    comment = mapped_column(TEXT, nullable=False)
+    comment = mapped_column(TEXT, nullable=True)
     text_for_publish = mapped_column(TEXT, nullable=True)
     # status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
@@ -168,16 +172,16 @@ class VehiclesPosts(Base):
     vehicle_model = mapped_column(VARCHAR(255), nullable=False)
     complectaion = mapped_column(VARCHAR(255), nullable=False)
     year_of_build = mapped_column(INTEGER, nullable=False)
-    engine_volume = mapped_column(FLOAT, nullable=False)
-    engine_power = mapped_column(FLOAT, nullable=False)
+    engine_volume = mapped_column(VARCHAR(255), nullable=False)
+    engine_power = mapped_column(VARCHAR(255), nullable=False)
     techpassport_photo = mapped_column(VARCHAR(255), nullable=False)
     date_end_technical_inspection = mapped_column(TIMESTAMP, nullable=False)
     announcement_from_who = mapped_column(VARCHAR(255), nullable=False)
     transaction_type = mapped_column(VARCHAR(255), nullable=False)
-    mileage = mapped_column(FLOAT, nullable=False)
-    comment = mapped_column(TEXT, nullable=False)
-    condition = mapped_column(VARCHAR(255), nullable=False)
-    presence_of_accident = mapped_column(BOOLEAN, nullable=False)
+    mileage = mapped_column(VARCHAR(255), nullable=False)
+    comment = mapped_column(TEXT, nullable=True)
+    condition = mapped_column(VARCHAR(255), nullable=True)
+    presence_of_accident = mapped_column(VARCHAR(255), nullable=True)
     text_for_publish = mapped_column(TEXT, nullable=True)
     # status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
@@ -213,6 +217,7 @@ class SchedulePosts(Base):
     post_id = mapped_column(BIGINT, nullable=False)
     text_for_publish = mapped_column(TEXT, nullable=False)
     published_datetime = mapped_column(TIMESTAMP, nullable=True)
+    create_date = mapped_column(TIMESTAMP, nullable=False)
     status = mapped_column(Enum(PostStatus), nullable=False, default=PostStatus.WAIT_ACCEPT)
 
     user: Mapped[Users] = Relationship(back_populates="schedule_posts")

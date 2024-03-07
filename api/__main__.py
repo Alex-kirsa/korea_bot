@@ -1,9 +1,9 @@
-from typing import Optional
-
 import uvicorn
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from bot.db import Repo
 from bot.utils.constants import TagType
@@ -25,12 +25,28 @@ class Tags(BaseModel):
     tags_list: list[Tag]
 
 
-@app.get('/tags', description="Для отримання тегів", response_model=Tags)
+origins = [
+    "https://webapp-forms.netlify.app",
+    "http://localhost",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
+# app.add_middleware(HTTPSRedirectMiddleware)
+
+
+@app.get('/api/tags', description="Для отримання тегів", response_model=Tags)
 async def get_tags(tag_type: TagType):
     async with db_factory() as session:
         repo = Repo(session)
         tags = await repo.post_repo.get_tags(tag_type)
-        print(tags)
         return {'status': 200, 'tags_list': [{'id': tag.id, 'tag': tag.tag} for tag in tags] if tags else []}
 
 

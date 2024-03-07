@@ -44,8 +44,8 @@ async def add_default_bot_settings(session: AsyncSession):
         'sub_channel_url': 'https://t.me/test1231324124',
         'sub_channel_id': str(-1001960731769),
         'webapp_url_vacancy': "https://webapp-forms.netlify.app/job-posting-form",
-        'webapp_url_real_estate': '	https://webapp-forms.netlify.app/real-estate-submission-form',
-        'webapp_url_vehicle': '	https://webapp-forms.netlify.app/vehicle-submission-form',
+        'webapp_url_real_estate': 'https://webapp-forms.netlify.app/real-estate-submission-form',
+        'webapp_url_vehicle': 'https://webapp-forms.netlify.app/vehicle-submission-form',
         "webapp_url_purchase": "https://webapp-forms.netlify.app/payment-confirmation-form",
         "card_number": "1234 5678 1234 5678"
 

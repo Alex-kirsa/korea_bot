@@ -26,8 +26,8 @@ async def startup(ctx):
 
 
 async def shutdown(ctx):
-    # bot: Bot = ctx['bot']
-    # await bot.session.close()
+    bot: Bot = ctx['bot']
+    await bot.session.close()
     pass
 
 
@@ -36,6 +36,7 @@ class WorkerSettings:
     on_startup = startup
     on_shutdown = shutdown
     functions = [send_schedule_message,]
+    # second = {0, 15, 30, 45},
     cron_jobs = [
-        cron('bot.services.scheduler.func.send_schedule_message', minute={0, 15, 30, 45}, max_tries=3, run_at_startup=True)
+        cron('bot.services.scheduler.func.send_schedule_message', second={59}, max_tries=3, run_at_startup=True)
     ]
